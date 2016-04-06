@@ -1,0 +1,15 @@
+begin
+drop procedure INITIALIZE();
+end;
+Informe de error -
+ORA-06550: line 2, column 1:
+PLS-00103: Encountered the symbol "DROP" when expecting one of the following:
+
+   ( begin case declare exit for goto if loop mod null pragma
+   raise return select update while with <an identifier>
+   <a double-quoted delimited-identifier> <a bind variable> <<
+   continue close current delete fetch lock insert open rollback
+   savepoint set sql execute commit forall merge pipe purge
+06550. 00000 -  "line %s, column %s:\n%s"
+*Cause:    Usually a PL/SQL compilation error.
+*Action:

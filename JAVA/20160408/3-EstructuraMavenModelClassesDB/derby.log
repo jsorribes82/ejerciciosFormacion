@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Fri Apr 08 13:38:13 CEST 2016:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0153-f5aa-4f63-000000ad6000 
+on database directory C:\simpleDb with class loader sun.misc.Launcher$AppClassLoader@1fdc96c 
+Loaded from file:/C:/Documents%20and%20Settings/Test/.m2/repository/org/apache/derby/derby/10.12.1.1/derby-10.12.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0_79-b15
+user.dir=C:\gitRepo\ejerciciosFormacion\JAVA\20160408\3-EstructuraMavenModelClassesDB
+os.name=Windows XP
+os.arch=x86
+os.version=5.1
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

@@ -1,13 +1,9 @@
-
 package com.indra.formacio.model;
-
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 /**
  * Objects of this class represents a Product of the companys portfolio.
@@ -24,8 +20,6 @@ public class Product {
 	protected String name;
 	@Column
 	protected String description;
-	@OneToMany(mappedBy="product")
-	protected List<Sale> Sales;
 	
 	public Long getId() {
 		return id;

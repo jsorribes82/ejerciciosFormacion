@@ -20,7 +20,6 @@ import javax.persistence.OneToOne;
 public class Product {
 	@Id
     @GeneratedValue (strategy=GenerationType.IDENTITY)
-	@OneToOne
 	protected Long id;
 	@Column
 	protected String name;

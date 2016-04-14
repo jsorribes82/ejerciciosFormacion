@@ -2,7 +2,6 @@ package com.indra.formacio;
 
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -20,142 +19,134 @@ import com.indra.formacio.model.Sale;
  */
 public class App 
 {
-	public static EntityManager manager = Persistence.createEntityManagerFactory("com.indra.formacio").createEntityManager();
 	
     public static void main( String[] args ) throws ParseException
     {
-    	initialize(new Integer [][] {{1,2},{3,4},{5,6,7,8}});
-    	actualizaPercentEmpleado();
-    	actualizaPercentClient();
-    	mostrarDatosClientes();
+    	EntityManager manager = Persistence.createEntityManagerFactory("com.indra.formacio").createEntityManager();
+    	
+    	initialize(manager,new Integer [][] {{1,2},{3,4},{5,6,7,8}});
+    	actualizaPercentEmpleado(manager);
+    	actualizaPercentClient(manager);
+    	mostrarDatosClientes(manager);
     	
     	
 		
     }
-    public static int clientsPerEmpleat(Employee emp){
-    	int total=0;
-    	List empleadosEmpresa = manager.createQuery(
-		        "SELECT e FROM Employee e ")
-		        .getResultList();
+    public static int clientsPerEmpleat(EntityManager manager,Employee emp){
     	List clientesEmpresa= manager.createQuery(
-		        "FROM Customer c ")
+		        "FROM Customer c "
+    			+"WHERE c.employee.id=:empID")
+    			.setParameter("empID", emp.getId())
 		        .getResultList();
-    	for (int i=0; i<empleadosEmpresa.size(); i++){
-    		for (int j=0; j<clientesEmpresa.size();j++){
-    			Employee empAux = (Employee) empleadosEmpresa.get(i);
-        		Customer custAux=(Customer)clientesEmpresa.get(j);
-			if (custAux.getId()==empAux.getId()){
-				total=i+1;
-			}
-    		}
-    	}
-    	return total;
+    	return clientesEmpresa.size();
     }
     
-     public static int productPerClient(Customer cust){
-     	int total=0;
-    	List ventasEmpresa= manager.createQuery(
-		        "FROM Sale s ")
+     public static int productPerClient(EntityManager manager,Customer cust){
+    	List productClient= manager.createQuery(
+		        "FROM Sale s "
+    			+"WHERE s.customer.id=:idProd")
+    			.setParameter("idProd", cust.getId())
 		        .getResultList();
-     	for (int i=0; i<ventasEmpresa.size(); i++){
-     		Sale ventaAux=(Sale)ventasEmpresa.get(i);
- 			if (ventaAux.getCustomer().equals(cust)){
- 				total=i+1;
- 			}
- 		}
-     	return total;
+     	return productClient.size();
      }
     /**
      * actualiza Percentatge de Clients per Empleat
      * @param clientesEmpresa
      * @throws ParseException 
      */
-    public static  void actualizaPercentEmpleado() throws ParseException{
+    public static  void actualizaPercentEmpleado(EntityManager manager) throws ParseException{
     	float totalClients=0,totalClientsPerEmpleat=0,total=0;
-    	Date date = new Date();
-    	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
-    	String fecha = sdf.format(date);
+//    	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
     	List empleadosEmpresa = manager.createQuery(
-		        "SELECT e FROM Employee e ")
+		        "FROM Employee e ")
 		        .getResultList();
     	List clientesEmpresa= manager.createQuery(
 		        "FROM Customer c ")
 		        .getResultList();
     	totalClients=clientesEmpresa.size();
-    	for (int i=0; i<clientesEmpresa.size();i++){
-    		Customer custAux=(Customer)clientesEmpresa.get(i);
-    		totalClientsPerEmpleat=clientsPerEmpleat(custAux.getEmployee());
+    	Employee empAux;
+    	manager.getTransaction().begin();
+		for (int i=0; i<empleadosEmpresa.size();i++){
+			empAux=(Employee)empleadosEmpresa.get(i);
+    		totalClientsPerEmpleat=clientsPerEmpleat(manager,empAux);
     		total=totalClientsPerEmpleat/totalClients*100;
 //    		System.out.println(total+" % de clients");
-    		custAux.getEmployee().setPercentCustomers(total);
-    		custAux.getEmployee().setPercentDate(sdf.parse(fecha))  ;  	
+    		empAux.setPercentCustomers(total);
+    		empAux.setPercentDate(new Date())  ;  	
 //    		System.out.println(sdf.format(custAux.getEmployee().getPercentDate()));
+    		manager.persist(empAux);
     	}
+		manager.getTransaction().commit();
+		
     }
-    public static  void actualizaPercentClient() throws ParseException{
+    public static  void actualizaPercentClient(EntityManager manager) throws ParseException{
     	float totalProductes=0,totalProductesPerClient=0,total=0;
-    	Date date = new Date();
-    	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
-    	String fecha = sdf.format(date);
-    	List ventasEmpresa= manager.createQuery(
-		        "FROM Sale s ")
+//    	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
+    	List clientesEmpresa= manager.createQuery(
+		        "FROM Customer c ")
 		        .getResultList();
     	List productos= manager.createQuery(
 		        "FROM Product p ")
 		        .getResultList();
     	totalProductes=productos.size();
-    	for (int i=0; i<ventasEmpresa.size();i++){
-    		Sale ventaAux=(Sale)ventasEmpresa.get(i);
-    		totalProductesPerClient=productPerClient(ventaAux.getCustomer());
+    	Customer custAux;
+    	manager.getTransaction().begin();
+    	for (int i=0; i<clientesEmpresa.size();i++){
+    		custAux=(Customer)clientesEmpresa.get(i);
+    		totalProductesPerClient=productPerClient(manager,custAux);
     		total=totalProductesPerClient/totalProductes*100;
-//    		System.out.println(total+" % de ventes");
-    		ventaAux.getCustomer().setPercentProduct (total);
-    		ventaAux.getCustomer().setPercentDate(sdf.parse(fecha))  ;  		
+//    		System.out.println("Cliente: "+custAux.getName() +"   "+total+" % de ventes");
+    		custAux.setPercentProduct (total);
+    		custAux.setPercentDate(new Date())  ; 
+    		manager.persist(custAux);
     	}
+    	manager.getTransaction().commit();
     }
-    public static void mostrarDatosClientes(){
+    public static void mostrarDatosClientes(EntityManager manager){
     	List empleadosEmpresa = manager.createQuery(
 		        "SELECT e FROM Employee e ")
 		        .getResultList();
-    	List clientesEmpresa= manager.createQuery(
-		        "FROM Customer c ")
-		        .getResultList();
-    	List ventasEmpresa= manager.createQuery(
-		        "FROM Sale s ")
-		        .getResultList();
+    	Employee empAux;
+    	Customer custAux;
+    	Sale ventaAux;
     	for (int i=0; i<empleadosEmpresa.size();i++){
-    		Employee empAux = (Employee) empleadosEmpresa.get(i);
+    		empAux = (Employee) empleadosEmpresa.get(i);
+    		List clientesEmpresa= manager.createQuery(
+    		        "FROM Customer c "
+    				+"WHERE c.employee.id=:empID")
+    				.setParameter("empID", empAux.getId() )
+    		        .getResultList();
     		System.out.println("-<"+empAux.getName()+">");
     		System.out.println("-Porcentaje de clientes: "+empAux.getPercentCustomers());
     		System.out.println("-Clientes: ");
     		for (int j=0; j<clientesEmpresa.size();j++){
-    			Customer custAux=(Customer)clientesEmpresa.get(j); 
-    			if (empAux.getId()==custAux.getEmployee().getId()){
+    			custAux=(Customer)clientesEmpresa.get(j);
+    			List ventasEmpresa= manager.createQuery(
+    			        "FROM Sale s "
+    					+"WHERE s.customer.id=:custID")
+    					.setParameter("custID", custAux.getId() )
+    			        .getResultList();
         			System.out.println("	-<"+custAux.getName()+">");
     				System.out.println("	-<"+custAux.getName()+">"+", Porcentaje de productos: <"+custAux.getPercentProduct()+">");
 					for (int k=0; k<ventasEmpresa.size();k++){
-						Sale ventaAux=(Sale)ventasEmpresa.get(k);
-	    				if (ventaAux.getCustomer().getId()==custAux.getId()){
+						ventaAux=(Sale)ventasEmpresa.get(k);
 	        				System.out.println("		-<"+ventaAux.getProduct().getName()+">");
 		    				
-	    				}
     				
-    			}
-    			}
+					}
     		}
     	}
     }
 
-	private static void initialize(Integer[][] empCliProd) {
+	private static void initialize(EntityManager manager,Integer[][] empCliProd) {
     	Employee e;
     	Customer c;
     	int numProduct;
     	Product p;
     	Sale s;
-		manager.getTransaction().begin();
-		
     	for (int i = 0; i < empCliProd.length; i++) {
-			e = new Employee();
+    		manager.getTransaction().begin();
+    		e = new Employee();
 			e.setName("Empleado "+i);
 			manager.persist(e);
 			for (int j = 0; j < empCliProd[i].length; j++) {
@@ -175,9 +166,7 @@ public class App
 					manager.persist(s);
 				}
 			}
-			
+			manager.getTransaction().commit();	
 		}
-    	manager.getTransaction().commit();
-		
 	}
 }

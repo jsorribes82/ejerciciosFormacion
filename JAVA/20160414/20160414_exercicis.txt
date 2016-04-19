@@ -1,0 +1,43 @@
+Java - JPA y Spring
+#########################################
+
+13/04/2016
+----------
+
+##################################################################################
+##################################################################################
+##################################################################################
+
+Referencia a Spring JPA Data Repositories: http://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html
+
+##################################################################################
+##################################################################################
+##################################################################################
+
+Ejercicios
+
+Tenemos la empresa en marcha, con datos en BD, pero queremos realizar ciertas operaciones y no tenemos cómo:
+
+1. Encontrar los empleados que hace más de X años que trabajan en la empresa
+	- Añadir la fecha de alta en la empresa a Empleado
+	- Crear método en el EmployeeRepository para encontrar a los empleados que hace X años que fueron dados de alta en la empresa contando a partir de hoy hacia atrás
+
+2. Encontrar a los empleados que se jubilan
+	- Crear método en el EmployeeRepository para encontrar a los empleados que tienen X años
+
+	
+3. Cuando los empleados se jubilan, tenemos que asignar a los clientes de ese empleado a otro empleado
+	- Crear la clase Enterprise en com.indra.formacio, que va a agrupar la lógica de las acciones de la empresa
+	- Añadir un método que con el nombre y apellidos de un empleado X, y el nombre y apellidos de un empleado Y, asigne TODOS los clientes de X a Y, actualice los porcentajes de los empleados, y elimine el empleado X
+	(opcional)
+	- Añadir el método para actualizar los porcentajes de clientes y empleados
+	
+
+4. La empresa quiere aumentar el control sobre las ventas y a parte de saber qué productos compra un cliente y desde cuándo, quiere saber cuánto compra.
+	- Tenemos que modificar la tabla de Producto-Cliente para que un cliente pueda tener un producto asociado N veces.
+	- La FECHA va a convertirse en la fecha de compra
+	- Necesitamos un campo con la CANTIDAD de producto que se ha comprado
+	- Necesitamos modificar el script de creación para tener estos datos inicializados
+	- Se debe actualizar el mapeo de datos del proyecto para adaptarlo a las nuevas necesidades
+
+5. Incorporar un método en Enterprise para saber cuál es el cliente que ha comprado más cantidad de cada producto

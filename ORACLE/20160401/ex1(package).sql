@@ -8,7 +8,7 @@ end PACK_EMPLOYEE;
 /
 create or replace package body PACK_EMPLOYEE as
 
-create or replace function TOTAL_clientes(id_empleado in number) return number is
+create function TOTAL_clientes(id_empleado in number) return number is
 			 Tclient_por_empl number(8,2);
 			  											
 			begin
@@ -18,7 +18,7 @@ create or replace function TOTAL_clientes(id_empleado in number) return number i
 			end;
       
 
-	create or replace procedure ACTUALIZA_PORCENTAJES_empleat as
+	create procedure ACTUALIZA_PORCENTAJES_empleat as
 		cursor Empleado_id_cur(id_empleado number) is 
             select count(id) total 
               from customer 
